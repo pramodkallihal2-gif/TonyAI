@@ -28,28 +28,46 @@ def cloud_brain(command):
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "http://localhost",
-        "X-Title": "Chhanukya"
+        "X-Title": "Chhanukya Assistant"
     }
 
     data = {
         "model": "meta-llama/llama-3-8b-instruct",
         "messages": [
-            {"role": "system", "content": "You are a helpful AI assistant."},
+            {"role": "system", "content": "You are Chhanukya, a smart and concise AI assistant."},
             {"role": "user", "content": command}
-        ]
+        ],
+        "temperature": 0.7
     }
 
-    response = requests.post(url, headers=headers, json=data)
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=data,
+            timeout=15  # Prevent infinite waiting
+        )
 
-    print("Status:", response.status_code)
-    print("Response:", response.text)
+        if response.status_code != 200:
+            print("OpenRouter Status:", response.status_code)
+            print("OpenRouter Response:", response.text)
+            return local_brain(command)
 
-    result = response.json()
+        result = response.json()
 
-    if "choices" in result:
-        return result["choices"][0]["message"]["content"]
-    else:
-        return "Cloud AI error occurred."
+        if "choices" in result:
+            return result["choices"][0]["message"]["content"].strip()
+        else:
+            print("Unexpected Response:", result)
+            return local_brain(command)
+
+    except requests.exceptions.Timeout:
+        print("Cloud Timeout")
+        return local_brain(command)
+
+    except Exception as e:
+        print("Cloud Exception:", e)
+        return local_brain(command)
 
 
 # ===============================

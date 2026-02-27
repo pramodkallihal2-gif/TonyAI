@@ -1,16 +1,33 @@
-import speech_recognition as sr
+import sounddevice as sd
+import queue
+import json
+from vosk import Model, KaldiRecognizer
 
-recognizer = sr.Recognizer()
+model = Model("vosk-model-small-en-in-0.4")
+recognizer = KaldiRecognizer(model, 16000)
+
+q = queue.Queue()
+
+def callback(indata, frames, time, status):
+    if status:
+        print(status)
+    q.put(bytes(indata))
 
 def take_command():
-    with sr.Microphone() as source:
-        print("Listening...")
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        audio = recognizer.listen(source)
+    print("Listening...")
 
-    try:
-        command = recognizer.recognize_google(audio)
-        print("You:", command)
-        return command.lower()
-    except:
-        return ""
+    with sd.RawInputStream(
+        samplerate=16000,
+        blocksize=8000,
+        dtype="int16",
+        channels=1,
+        callback=callback
+    ):
+        while True:
+            data = q.get()
+            if recognizer.AcceptWaveform(data):
+                result = json.loads(recognizer.Result())
+                text = result.get("text", "")
+                if text != "":
+                    print("You:", text)
+                    return text.lower()

@@ -24,7 +24,7 @@ def main():
         if not active_mode:
             if any(word in text for word in WAKE_WORDS):
                 active_mode = True
-                speak("Yes, I am listening.")
+                speak("Yes, sir. How can I assist you?")
             continue
         # ----------- ACTIVE MODE ------------
 
@@ -34,10 +34,10 @@ def main():
             active_mode = False
             continue
         # Shutdown completely
-        if any(word in text for word in ["shut down", "deactivate"]):
+        if any(word in text for word in ["shut down", "discharge","turn off"]):
             speak("Do you want to terminate the program?")
             confirm = take_command()
-            if any(word in confirm for word in ["yes", "terminate"]):
+            if any(word in confirm for word in ["yes", "bye tony", "goodbye"]):
                 speak("Terminating program.")
                 break
 

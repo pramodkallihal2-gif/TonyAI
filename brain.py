@@ -104,7 +104,7 @@ def cloud_brain(command):
         response = requests.post(url, headers=headers, json=data, timeout=8)
 
         if response.status_code != 200:
-            return "Cloud service unavailable."
+            return f"Cloud service unavailable. Status code: {response.status_code}"
 
         result = response.json()
 

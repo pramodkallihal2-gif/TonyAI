@@ -17,7 +17,7 @@ def main():
         if not text:
             continue
 
-        print("Heard:", text)
+        
         
 
         # ----------- STANDBY MODE -----------

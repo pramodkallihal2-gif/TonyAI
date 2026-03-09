@@ -1,61 +1,95 @@
 import sounddevice as sd
 import numpy as np
-import webrtcvad
+import scipy.io.wavfile as wav
+import requests
 from faster_whisper import WhisperModel
+from dotenv import load_dotenv
+import os
 
-model = WhisperModel("medium", compute_type="int8")
+# Load environment variables
+load_dotenv()
 
-vad = webrtcvad.Vad()
-vad.set_mode(2)  # 0-3 (higher = stricter)
+# Deepgram API
+DEEPGRAM_API_KEY = os.getenv("DEEPGRAM_API_KEY")
 
-SAMPLE_RATE = 16000
-FRAME_DURATION = 30  # ms
-FRAME_SIZE = int(SAMPLE_RATE * FRAME_DURATION / 1000)
+# Local fallback
+local_model = WhisperModel("small", compute_type="int8")
+
+
+def record_audio():
+    samplerate = 16000
+    duration = 3
+
+    audio = sd.rec(
+        int(duration * samplerate),
+        samplerate=samplerate,
+        channels=1,
+        dtype="int16"
+    )
+
+    sd.wait()
+
+    return samplerate, audio
+
+
+def deepgram_stt(samplerate, audio):
+
+    wav.write("temp.wav", samplerate, audio)
+
+    url = "https://api.deepgram.com/v1/listen"
+
+    headers = {
+        "Authorization": f"Token {DEEPGRAM_API_KEY}",
+        "Content-Type": "audio/wav"
+    }
+
+    with open("temp.wav", "rb") as f:
+        response = requests.post(url, headers=headers, data=f)
+
+    if response.status_code == 200:
+
+        result = response.json()
+
+        try:
+            text = result["results"]["channels"][0]["alternatives"][0]["transcript"]
+            return text.lower()
+        except:
+            return None
+
+    return None
+
+
+def local_stt(audio):
+
+    audio = audio.flatten().astype("float32") / 32768.0
+
+    segments, _ = local_model.transcribe(audio, language="multi", beam_size=5)
+
+    text = ""
+
+    for seg in segments:
+        text += seg.text
+
+    return text.strip().lower()
 
 
 def take_command():
 
     print("Listening...")
 
-    audio = sd.rec(
-        int(SAMPLE_RATE * 3),
-        samplerate=SAMPLE_RATE,
-        channels=1,
-        dtype="int16"
-    )
-    sd.wait()
+    samplerate, audio = record_audio()
 
-    audio = audio.flatten()
+    # Try Deepgram first
+    text = deepgram_stt(samplerate, audio)
 
-    # ----- Voice Activity Detection -----
-    speech_detected = False
+    if text:
+        print("Heard:", text)
+        return text
 
-    for i in range(0, len(audio), FRAME_SIZE):
-        frame = audio[i:i + FRAME_SIZE]
+    # Fallback to local whisper
+    text = local_stt(audio)
 
-        if len(frame) < FRAME_SIZE:
-            break
-
-        if vad.is_speech(frame.tobytes(), SAMPLE_RATE):
-            speech_detected = True
-            break
-
-    if not speech_detected:
-        return None
-
-    # ----- Transcription -----
-    audio_float = audio.astype("float32") / 32768.0
-
-    segments, _ = model.transcribe(audio_float, language="en")
-
-    text = ""
-    for seg in segments:
-        text += seg.text
-
-    text = text.strip().lower()
-
-    # Ignore very short hallucinations
-    if len(text) < 3:
-        return None
+    if text:
+        print("Heard (offline):", text)
 
     return text

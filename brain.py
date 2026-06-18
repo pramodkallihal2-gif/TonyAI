@@ -17,7 +17,7 @@ from memory import (
 def local_brain(command):
 
     command = command.lower()
-    if "what do you know about me" in command:
+    if "recall my memory" in command:
 
         memory = load_long_memory()
 

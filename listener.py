@@ -10,7 +10,7 @@ def take_command():
 
             recognizer.adjust_for_ambient_noise(
                 source,
-                duration=1
+                duration=2
             )
 
             print("Listening...")

@@ -4,6 +4,7 @@ from config import user_name, assistant_name
 from voice import speak
 from listener import take_command
 from brain import generate_response
+from memory import load_long_memory, save_long_memory
 import sys
 
 WAKE_WORDS = ["tony", "toni"]
@@ -73,3 +74,38 @@ def main():
 
 if __name__ == "__main__":
     main()
+def update_memory(command):
+
+    command = command.lower()
+
+    memory = load_long_memory()
+
+    # Name
+    if command.startswith("my name is"):
+        memory["profile"]["name"] = (
+            command.replace("my name is", "")
+            .strip()
+            .title()
+        )
+
+    # College
+    elif "college" in command:
+        memory["profile"]["college"] = command
+
+    # Branch
+    elif "cse" in command or "computer science" in command:
+        memory["profile"]["branch"] = "CSE"
+
+    # Goals
+    elif command.startswith("i want to"):
+        memory["goals"].append(command)
+
+    # Preferences
+    elif command.startswith("i like"):
+        memory["preferences"].append(command)
+
+    # Projects
+    elif "project" in command:
+        memory["projects"].append(command)
+
+    save_long_memory(memory)

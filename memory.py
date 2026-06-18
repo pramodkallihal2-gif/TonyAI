@@ -25,12 +25,25 @@ def load_profile():
 
 
 # ---------- Long Memory ----------
+MEMORY_FILE = "long_memory.json"
+
 def load_long_memory():
-    if not os.path.exists(LONG_MEMORY_FILE):
-        return {}
-    with open(LONG_MEMORY_FILE, "r") as f:
+
+    if not os.path.exists(MEMORY_FILE):
+        return {
+            "profile": {},
+            "goals": [],
+            "preferences": [],
+            "projects": [],
+            "facts": []
+        }
+
+    with open(MEMORY_FILE, "r") as f:
         return json.load(f)
 
-def save_long_memory(data):
-    with open(LONG_MEMORY_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+
+def save_long_memory(memory):
+
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(memory, f, indent=4)
+

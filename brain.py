@@ -17,7 +17,14 @@ from memory import (
 def local_brain(command):
 
     command = command.lower()
+    if "what do you know about me" in command:
 
+        memory = load_long_memory()
+
+        return (
+            f"Your name is {memory['profile'].get('name', 'unknown')}. "
+            f"You are working toward {', '.join(memory['goals'])}."
+        )
     # Greetings
     if any(word in command for word in ["hello", "hi", "hey"]):
         return "Hello. How can I help you?"
@@ -122,7 +129,8 @@ Goal: {profile.get('goal')}
 
 User Memory:
 {memory}
-
+Memory:
+{memory}
 Recent Conversation:
 {conversation}
 

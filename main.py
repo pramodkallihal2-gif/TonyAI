@@ -8,7 +8,7 @@ from memory import load_long_memory, save_long_memory
 import sys
 
 WAKE_WORDS = ["tony", "toni"]
-SLEEP_WORDS = ["sleep", "go to sleep"]
+SLEEP_WORDS = ["sleep", "go to sleep","Hold"]
 
 def main():
 

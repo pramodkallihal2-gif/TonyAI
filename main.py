@@ -7,8 +7,8 @@ from brain import generate_response
 from memory import load_long_memory, save_long_memory
 import sys
 
-WAKE_WORDS = ["tony", "toni"]
-SLEEP_WORDS = ["sleep", "go to sleep","Hold"]
+WAKE_WORDS = ["tony"]
+SLEEP_WORDS = ["sleep", "go to sleep","hold"]
 
 def main():
 

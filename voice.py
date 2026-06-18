@@ -5,7 +5,7 @@ import uuid
 import os
 import time
 
-VOICE = "en-US-GuyNeural"
+VOICE = "en-GB-SoniaNeural"
 
 pygame.mixer.init()
 

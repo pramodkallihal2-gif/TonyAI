@@ -2,6 +2,7 @@ import webbrowser
 import requests
 import datetime
 import os
+from system_control import execute_system_command
 
 from memory import (
     add_to_history,
@@ -26,7 +27,9 @@ def local_brain(command):
             f"You are working toward {', '.join(memory['goals'])}."
         )
     # Greetings
-    if any(word in command for word in ["hello", "hi", "hey"]):
+    words = command.split()
+
+    if any(word in words for word in ["hello", "hi", "hey"]):
         return "Hello. How can I help you?"
 
     # Time
@@ -40,44 +43,6 @@ def local_brain(command):
         return datetime.datetime.now().strftime(
             "Today is %A, %d %B %Y"
         )
-
-    # VS Code
-    if (
-        "open vs code" in command
-        or "open vscode" in command
-        or "open code" in command
-        or "open vs" in command
-    ):
-        os.system("code")
-        return "Opening Visual Studio Code."
-
-    # Browser
-    if "open google" in command or "open browser" in command:
-        webbrowser.open("https://www.google.com")
-        return "Opening Google."
-
-    # Search
-    if (
-        command.startswith("search")
-        or command.startswith("google")
-        or command.startswith("search for")
-    ):
-
-        query = (
-            command.replace("search for", "")
-            .replace("search", "")
-            .replace("google", "")
-            .strip()
-        )
-
-        if query:
-            webbrowser.open(
-                f"https://www.google.com/search?q={query}"
-            )
-            return f"Searching for {query}"
-
-        return "What should I search for?"
-
     return None
 
 
@@ -179,7 +144,6 @@ Tony:
 # ---------------- MAIN RESPONSE ---------------- #
 
 def generate_response(command):
-
     # Local commands first
     local_response = local_brain(command)
 
@@ -188,6 +152,10 @@ def generate_response(command):
 
     # Update memory
     update_memory(command)
+    system_response = execute_system_command(command)
+
+    if system_response:
+        return system_response
 
     # Ollama response
     return ollama_brain(command)

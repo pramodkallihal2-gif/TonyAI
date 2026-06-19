@@ -21,7 +21,7 @@ def local_brain(command):
     if "recall myself" in command:
 
         memory = load_long_memory()
-        update_status("👀 Recalling your profile...")
+        update_status("recall.PNG")
 
         return (
             f"Your name is {memory['profile'].get('name', 'unknown')}. "
@@ -31,19 +31,19 @@ def local_brain(command):
     words = command.split()
 
     if any(word in words for word in ["hello", "hi", "hey"]):
-        update_status("🙏 Greeting...")
+        update_status("greet.PNG")
         return "Hello. How can I help you?"
 
     # Time
     if "time" in command:
-        update_status("🕒 Checking time...")
+        update_status("time.PNG")
         return datetime.datetime.now().strftime(
             "The time is %I:%M %p"
         )
 
     # Date
     if "date" in command:
-        update_status("📅 Checking date...")
+        update_status("date.PNG")
         return datetime.datetime.now().strftime(
             "Today is %A, %d %B %Y"
         )
@@ -57,7 +57,7 @@ def update_memory(command):
     command = command.lower()
 
     memory = load_long_memory()
-    update_status("🧠 Thinking...")
+    update_status("think.PNG")
 
     if (
         command.startswith("i am")
@@ -68,7 +68,7 @@ def update_memory(command):
 
         key = f"fact_{len(memory)+1}"
         memory[key] = command
-        update_status("💾 Updating memory...")
+        update_status("update.PNG")
         save_long_memory(memory)
 
 
@@ -140,7 +140,7 @@ Tony:
         reply = result.get("response", "").strip()
 
         add_to_history("assistant", reply)
-        update_status("🗣 Speaking...")
+        update_status("speak.PNG")
 
         return reply
 
@@ -162,7 +162,7 @@ def generate_response(command):
     system_response = execute_system_command(command)
 
     if system_response:
-        
+        update_status("system.PNG")
         return system_response
 
     # Ollama response

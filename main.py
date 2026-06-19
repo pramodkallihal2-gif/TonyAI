@@ -7,6 +7,8 @@ from brain import generate_response
 from memory import load_long_memory, save_long_memory
 import sys
 from avatar import update_status, app
+import assets
+
 
 WAKE_WORDS = ["tony"]
 SLEEP_WORDS = ["sleep", "go to sleep","hold"]
@@ -15,11 +17,11 @@ def main():
 
     active_mode = False
     waiting_for_shutdown = False
-    update_status("🤠 Starting...")
+    update_status("idle.PNG")
     speak(f"{assistant_name} is ready.")
 
     while True:
-        update_status("🎤 Listening...")
+        update_status("listening.PNG")
         app.processEvents()
         text = take_command()
 
@@ -30,18 +32,18 @@ def main():
         if waiting_for_shutdown:
 
             if any(word in text for word in ["yes", "yeah", "confirm", "bye tony", "goodbye"]):
-                update_status("😫 Terminating program...")
+                update_status("bye.PNG")
                 speak("Terminating program.")
                 return
 
             elif any(word in text for word in ["no", "cancel", "don't"]):
-                update_status("🤩 Shutdown cancelled.")
+                update_status("cancel.PNG")
                 speak("Shutdown cancelled.")
                 waiting_for_shutdown = False
                 continue
 
             else:
-                update_status("🤔 Unclear response.")
+                update_status("unclear.PNG")
                 speak("Please say yes or no.")
                 continue
         
@@ -50,14 +52,14 @@ def main():
         if not active_mode:
             if any(word in text for word in WAKE_WORDS):
                 active_mode = True
-                update_status("🎤 Listening...")
+                update_status("speak.PNG")
                 speak("Yes, sir. How can I assist you?")
             continue
         # ----------- ACTIVE MODE ------------
 
         # Sleep command
         if any(word in text for word in SLEEP_WORDS):
-            update_status("💤 Sleeping...")
+            update_status("sleep.PNG")
             speak("Going to standby mode.")
             active_mode = False
             waiting_for_shutdown = False
@@ -70,13 +72,13 @@ def main():
             "terminate",
             "exit"
         ]):
-            update_status("🥲 Really.... shutdown!")
+            update_status("terminate.PNG")
             speak("Do you want to terminate the program?")
             waiting_for_shutdown = True
             continue
 
 
-        update_status("🧠 Thinking...")
+        update_status("speak.PNG")
         # Normal command
         response = generate_response(text)
         speak(response)

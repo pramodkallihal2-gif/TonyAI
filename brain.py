@@ -3,7 +3,7 @@ import requests
 import datetime
 import os
 from system_control import execute_system_command
-
+from avatar import update_status, app
 from memory import (
     add_to_history,
     get_history,
@@ -21,6 +21,7 @@ def local_brain(command):
     if "recall myself" in command:
 
         memory = load_long_memory()
+        update_status("👀 Recalling your profile...")
 
         return (
             f"Your name is {memory['profile'].get('name', 'unknown')}. "
@@ -30,16 +31,19 @@ def local_brain(command):
     words = command.split()
 
     if any(word in words for word in ["hello", "hi", "hey"]):
+        update_status("🙏 Greeting...")
         return "Hello. How can I help you?"
 
     # Time
     if "time" in command:
+        update_status("🕒 Checking time...")
         return datetime.datetime.now().strftime(
             "The time is %I:%M %p"
         )
 
     # Date
     if "date" in command:
+        update_status("📅 Checking date...")
         return datetime.datetime.now().strftime(
             "Today is %A, %d %B %Y"
         )
@@ -53,6 +57,7 @@ def update_memory(command):
     command = command.lower()
 
     memory = load_long_memory()
+    update_status("🧠 Thinking...")
 
     if (
         command.startswith("i am")
@@ -63,6 +68,7 @@ def update_memory(command):
 
         key = f"fact_{len(memory)+1}"
         memory[key] = command
+        update_status("💾 Updating memory...")
         save_long_memory(memory)
 
 
@@ -134,6 +140,7 @@ Tony:
         reply = result.get("response", "").strip()
 
         add_to_history("assistant", reply)
+        update_status("🗣 Speaking...")
 
         return reply
 
@@ -155,6 +162,7 @@ def generate_response(command):
     system_response = execute_system_command(command)
 
     if system_response:
+        
         return system_response
 
     # Ollama response

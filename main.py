@@ -6,6 +6,7 @@ from listener import take_command
 from brain import generate_response
 from memory import load_long_memory, save_long_memory
 import sys
+from avatar import update_status, app
 
 WAKE_WORDS = ["tony"]
 SLEEP_WORDS = ["sleep", "go to sleep","hold"]
@@ -14,9 +15,12 @@ def main():
 
     active_mode = False
     waiting_for_shutdown = False
+    update_status("🤠 Starting...")
     speak(f"{assistant_name} is ready.")
 
     while True:
+        update_status("🎤 Listening...")
+        app.processEvents()
         text = take_command()
 
         if not text:
@@ -26,15 +30,18 @@ def main():
         if waiting_for_shutdown:
 
             if any(word in text for word in ["yes", "yeah", "confirm", "bye tony", "goodbye"]):
+                update_status("😫 Terminating program...")
                 speak("Terminating program.")
                 return
 
             elif any(word in text for word in ["no", "cancel", "don't"]):
+                update_status("🤩 Shutdown cancelled.")
                 speak("Shutdown cancelled.")
                 waiting_for_shutdown = False
                 continue
 
             else:
+                update_status("🤔 Unclear response.")
                 speak("Please say yes or no.")
                 continue
         
@@ -43,12 +50,14 @@ def main():
         if not active_mode:
             if any(word in text for word in WAKE_WORDS):
                 active_mode = True
+                update_status("🎤 Listening...")
                 speak("Yes, sir. How can I assist you?")
             continue
         # ----------- ACTIVE MODE ------------
 
         # Sleep command
         if any(word in text for word in SLEEP_WORDS):
+            update_status("💤 Sleeping...")
             speak("Going to standby mode.")
             active_mode = False
             waiting_for_shutdown = False
@@ -61,12 +70,13 @@ def main():
             "terminate",
             "exit"
         ]):
+            update_status("🥲 Really.... shutdown!")
             speak("Do you want to terminate the program?")
             waiting_for_shutdown = True
             continue
 
 
-
+        update_status("🧠 Thinking...")
         # Normal command
         response = generate_response(text)
         speak(response)

@@ -5,11 +5,13 @@ import os
 from system_control import execute_system_command
 from avatar import update_status, app
 from memory import (
-    add_to_history,
-    get_history,
-    load_profile,
     load_long_memory,
-    save_long_memory
+    save_long_memory,
+    update_memory,
+    recall_memory,
+    add_to_history,
+    load_profile,
+    get_history
 )
 
 
@@ -18,7 +20,7 @@ from memory import (
 def local_brain(command):
 
     command = command.lower()
-    if "recall myself" in command:
+    if "my memory" in command:
 
         memory = load_long_memory()
         update_status("recall.PNG")
@@ -49,27 +51,6 @@ def local_brain(command):
         )
     return None
 
-
-# ---------------- MEMORY ---------------- #
-
-def update_memory(command):
-
-    command = command.lower()
-
-    memory = load_long_memory()
-    update_status("think.PNG")
-
-    if (
-        command.startswith("i am")
-        or command.startswith("my ")
-        or command.startswith("i like")
-        or command.startswith("i want")
-    ):
-
-        key = f"fact_{len(memory)+1}"
-        memory[key] = command
-        update_status("update.PNG")
-        save_long_memory(memory)
 
 
 # ---------------- OLLAMA ---------------- #
@@ -164,6 +145,18 @@ def generate_response(command):
     if system_response:
         update_status("system.PNG")
         return system_response
+    # Recall memory
+
+    memory_answer = recall_memory(command)
+
+    if memory_answer:
+        return memory_answer
+
+
+    # Update memory
+
+    if update_memory(command):
+        return "I'll remember that."
 
     # Ollama response
     return ollama_brain(command)

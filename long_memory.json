@@ -1,13 +1,12 @@
 {
     "profile": {
         "name": "Pramod",
-        "college": "AMCEC",
-        "branch": "CSE"
+        "college": "amc",
+        "branch": "cse"
     },
-    "goals": [],
     "preferences": [],
-    "projects": [],
-    "facts": [],
-    "fact_6": "i like football",
-    "fact_7": "my hometown is surangi"
+    "goals": [
+        "i want to become a software engineer"
+    ],
+    "projects": []
 }

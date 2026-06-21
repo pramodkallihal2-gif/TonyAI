@@ -3,6 +3,13 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 import sys
 import os
+from PyQt6.QtWidgets import (
+    QApplication,
+    QWidget,
+    QLabel,
+    QPushButton,
+    QLineEdit
+)
 
 
 class TonyWindow(QWidget):
@@ -12,7 +19,7 @@ class TonyWindow(QWidget):
 
         self.setWindowTitle("Tony")
 
-        self.setFixedSize(420, 420)
+        self.setFixedSize(420, 520)
 
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint |
@@ -26,7 +33,7 @@ class TonyWindow(QWidget):
         """)
 
         self.image_label = QLabel(self)
-        self.image_label.setGeometry(0, 0, 420, 420)
+        self.image_label.setGeometry(10, 10, 400, 350)
         self.image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Bottom-right position
@@ -36,9 +43,59 @@ class TonyWindow(QWidget):
         y = screen.height() - 500
 
         self.move(x, y)
-
-        self.show()
+ 
         self.drag_position = None
+        self.input_box = QLineEdit(self)
+
+        self.input_box.setGeometry(
+            20,
+            390,
+            280,
+            40
+        )
+
+        self.input_box.setPlaceholderText(
+            "Talk to Tony..."
+        )
+        self.send_button = QPushButton(
+            "Send",
+            self
+        )
+
+        self.send_button.setGeometry(
+            310,
+            390,
+            90,
+            40
+        )
+        self.input_box.returnPressed.connect(
+            self.send_message
+        )
+
+        self.send_button.clicked.connect(
+            self.send_message
+        )
+        self.input_box.setStyleSheet("""
+            background-color: white;
+            color: black;
+            border-radius: 10px;
+            padding: 5px;
+        """)
+        self.input_box.setText("Start")
+        self.send_button.setStyleSheet("""
+            background-color: #6A5ACD;
+            color: white;
+            border-radius: 10px;
+        """)
+        self.user_text = ""
+        self.show()
+    def send_message(self):
+
+        self.user_text = (
+            self.input_box.text()
+        )
+
+        self.input_box.clear()
 
     def set_image(self, image_name):
 
@@ -74,7 +131,13 @@ class TonyWindow(QWidget):
                 event.globalPosition().toPoint() - self.drag_position
             )
             event.accept()
+def get_text_input():
 
+    text = window.user_text
+
+    window.user_text = ""
+
+    return text
 
 # Create application
 app = QApplication(sys.argv)

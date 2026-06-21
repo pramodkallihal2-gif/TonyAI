@@ -56,6 +56,7 @@ def local_brain(command):
 # ---------------- OLLAMA ---------------- #
 
 def ollama_brain(command):
+    update_status("think.PNG")
 
     profile = load_profile()
     memory = load_long_memory()

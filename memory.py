@@ -117,7 +117,7 @@ def update_memory(command):
 
     save_long_memory(memory)
 
-    return True
+    return False
 def recall_memory(command):
 
     memory = load_long_memory()

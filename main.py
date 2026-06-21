@@ -7,6 +7,7 @@ from brain import generate_response
 from memory import load_long_memory, save_long_memory
 import sys
 from avatar import update_status, app
+from avatar import get_text_input
 import assets
 
 
@@ -21,9 +22,20 @@ def main():
     speak(f"{assistant_name} is ready.")
 
     while True:
-        update_status("listening.PNG")
-        app.processEvents()
-        text = take_command()
+        typed_text = get_text_input()
+
+        if typed_text:
+            text = typed_text
+        else:
+            update_status("listening.PNG")
+            app.processEvents()
+
+            text = take_command()
+        
+
+        
+
+        
 
         if not text:
             continue

@@ -1,5 +1,5 @@
 from email.mime import text
-
+from skill_loader import load_skills
 from config import user_name, assistant_name
 from voice import speak
 from listener import take_command
@@ -15,7 +15,7 @@ WAKE_WORDS = ["tony"]
 SLEEP_WORDS = ["sleep", "go to sleep","hold"]
 
 def main():
-
+    load_skills()
     active_mode = False
     waiting_for_shutdown = False
     update_status("idle.PNG")

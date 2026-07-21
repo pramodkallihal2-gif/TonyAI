@@ -2,6 +2,7 @@ import webbrowser
 import requests
 import datetime
 import os
+from intent_router import route
 from system_control import execute_system_command
 from avatar import update_status, app
 from memory import (
@@ -13,43 +14,7 @@ from memory import (
     load_profile,
     get_history
 )
-
-
-# ---------------- LOCAL COMMANDS ---------------- #
-
-def local_brain(command):
-
-    command = command.lower()
-    if "my memory" in command:
-
-        memory = load_long_memory()
-        update_status("recall.PNG")
-
-        return (
-            f"Your name is {memory['profile'].get('name', 'unknown')}. "
-            f"You are working toward {', '.join(memory['goals'])}."
-        )
-    # Greetings
-    words = command.split()
-
-    if any(word in words for word in ["hello", "hi", "hey"]):
-        update_status("greet.PNG")
-        return "Hello. How can I help you?"
-
-    # Time
-    if "time" in command:
-        update_status("time.PNG")
-        return datetime.datetime.now().strftime(
-            "The time is %I:%M %p"
-        )
-
-    # Date
-    if "date" in command:
-        update_status("date.PNG")
-        return datetime.datetime.now().strftime(
-            "Today is %A, %d %B %Y"
-        )
-    return None
+from local_brain import local_brain
 
 
 
@@ -133,31 +98,10 @@ Tony:
 # ---------------- MAIN RESPONSE ---------------- #
 
 def generate_response(command):
-    # Local commands first
-    local_response = local_brain(command)
 
-    if local_response:
-        return local_response
+    response = route(command)
 
-    # Update memory
-    update_memory(command)
-    system_response = execute_system_command(command)
+    if response:
+        return response
 
-    if system_response:
-        update_status("system.PNG")
-        return system_response
-    # Recall memory
-
-    memory_answer = recall_memory(command)
-
-    if memory_answer:
-        return memory_answer
-
-
-    # Update memory
-
-    if update_memory(command):
-        return "I'll remember that."
-
-    # Ollama response
     return ollama_brain(command)

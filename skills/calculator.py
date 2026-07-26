@@ -7,7 +7,8 @@ KEYWORDS = [
     "multiply",
     "divide"
 ]
-
+DESCRIPTION = "Performs basic arithmetic calculations."
+VERSION = "1.0"
 def handle(command):
 
     command = command.lower()

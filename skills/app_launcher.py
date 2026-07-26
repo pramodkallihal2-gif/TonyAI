@@ -3,7 +3,8 @@ SKILL_NAME = "App Launcher"
 KEYWORDS = [
     "open"
 ]
-
+DESCRIPTION = "Launches applications on your computer."
+VERSION = "1.0"
 
 def handle(command):
 

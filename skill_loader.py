@@ -25,8 +25,10 @@ def load_skills():
                 if hasattr(module, "handle"):
 
                     skills.append({
-                                    "name": module.SKILL_NAME,
-                                    "keywords": module.KEYWORDS,
+                                    "name": getattr(module, "SKILL_NAME", file[:-3]),
+                                    "description": getattr(module, "DESCRIPTION", "No description"),
+                                    "version": getattr(module, "VERSION", "1.0"),
+                                    "keywords": getattr(module, "KEYWORDS", []),
                                     "handler": module.handle
                                 })
 
@@ -55,3 +57,14 @@ def execute_skills(command):
                 print(f"{skill['name']} error: {e}")
 
     return None
+def list_skills():
+
+    return [
+        {
+            "name": skill["name"],
+            "description": skill["description"],
+            "version": skill["version"]
+        }
+
+        for skill in skills
+    ]

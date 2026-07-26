@@ -7,7 +7,8 @@ KEYWORDS = [
     "play",
     "video"
 ]
-
+DESCRIPTION = "Searches and plays videos on YouTube."
+VERSION = "1.0"
 
 def handle(command):
 

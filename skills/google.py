@@ -2,11 +2,12 @@ import webbrowser
 from urllib.parse import quote
 
 SKILL_NAME = "Google"
-
+VERSION = "1.0"
 KEYWORDS = [
     "google",
     "search"
 ]
+DESCRIPTION = "Searches Google for a query or opens the Google homepage."
 
 def handle(command):
 

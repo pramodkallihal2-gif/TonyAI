@@ -3,7 +3,8 @@ SKILL_NAME = "Wikipedia"
 KEYWORDS = [    
     "who is"
 ]
-
+DESCRIPTION = "Fetches a brief summary of a person from Wikipedia."
+VERSION = "1.0"
 def handle(command):
 
     command = command.lower()
